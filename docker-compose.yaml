@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: backend_app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_NAME: mydb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_app
+    ports:
+      - "8080:80"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /src/web
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./frontend/package.json
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
