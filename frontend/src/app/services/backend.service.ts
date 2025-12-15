@@ -3,45 +3,55 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 interface BasicResponse {
-  status: number,
-  message: string
+	status: number,
+	message: string
 }
 
 @Injectable({
-  providedIn: 'root'
+  	providedIn: 'root'
 })
 export class BackendService {
-  private apiUrl = 'http://localhost:3000/api';
+	private apiUrl = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
+	constructor(private http: HttpClient) {}
 
-  getProducts(): Observable<{products: []}> {
-    return this.http.get<{ products: [] }>(`${this.apiUrl}/products`);
-  }
+	getProducts(): Observable<{products: []}> {
+		return this.http.get<{ products: [] }>(`${this.apiUrl}/products`);
+	}
 
-  getCart(): Observable<{products: []}>{
-    return this.http.get<{ products: [] }>(`${this.apiUrl}/cart`, 
-      {
-        headers: {
-          'X-Guest-ID': '3-123-12d1'
-        }
-      }
-    );
-  }
+	getCart(): Observable<{products: []}>{
+		return this.http.get<{ products: [] }>(`${this.apiUrl}/cart`, 
+			{
+				headers: {
+					'X-Guest-ID': '550e8400-e29b-41d4-a716-446655440000'
+				}
+			}
+		);
+	}
 
-  addToCart(productId: number): Observable<BasicResponse> {
-    return this.http.post<BasicResponse>(`${this.apiUrl}/cart/add`, 
-      {
-        productId
-      }
-    );
-  }
+	addToCart(productId: number): Observable<BasicResponse> {
+		return this.http.post<BasicResponse>(`${this.apiUrl}/cart/add`, 
+			{
+				productId
+			},
+			{
+				headers: {
+					'X-Guest-ID': '550e8400-e29b-41d4-a716-446655440000'
+				}
+			}
+		);
+	}
 
-  removeFromCart(productId: number): Observable<BasicResponse> {
-    return this.http.post<BasicResponse>(`${this.apiUrl}/cart/remove`,
-      {
-        productId
-      }
-    );
-  }
+  	removeFromCart(productId: number): Observable<BasicResponse> {
+		return this.http.post<BasicResponse>(`${this.apiUrl}/cart/remove`,
+			{
+				productId
+			},
+			{
+				headers: {
+					'X-Guest-ID': '550e8400-e29b-41d4-a716-446655440000'
+				}
+			}
+		);
+  	}
 }
