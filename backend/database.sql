@@ -9,7 +9,7 @@ CREATE TABLE products (
     images JSONB NOT NULL DEFAULT '[]'
 );
 
-INSERT INTO Products (name, description, price, quantity, images) VALUES
+INSERT INTO products (name, description, price, quantity, images) VALUES
 ('Laptop Pro 15','Snažan laptop za profesionalnu upotrebu',1299.99,10,'["https://picsum.photos/seed/laptop1/600","https://picsum.photos/seed/laptop2/600"]'),
 ('Wireless Mouse','Bežični miš s ergonomskim dizajnom',24.50,150,'["https://picsum.photos/seed/mouse/600"]'),
 ('Mechanical Keyboard','Mehanička tipkovnica s RGB osvjetljenjem',89.90,75,'["https://picsum.photos/seed/keyboard/600"]'),
@@ -60,14 +60,27 @@ INSERT INTO Products (name, description, price, quantity, images) VALUES
 ('Garden Hose 20m','Vrtno crijevo duljine 20m',29.95,90,'[]'),
 ('BBQ Grill','Roštilj za dvorište',249.99,12,'["https://picsum.photos/seed/grill/600"]');
 
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS carts;
 
 CREATE TABLE carts (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NULL,
+    user_id INTEGER NULL REFERENCES users(id) ON DELETE CASCADE,
+    guest_id UUID NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'active',
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CHECK (
+        (user_id IS NOT NULL AND guest_id IS NULL)
+        OR
+        (user_id IS NULL AND guest_id IS NOT NULL)
+    )
 );
 
 DROP TABLE IF EXISTS cart_items;
