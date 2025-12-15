@@ -2,6 +2,14 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BackendService } from './services/backend.service';
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  images: string[]
+}
+
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
@@ -9,16 +17,24 @@ import { BackendService } from './services/backend.service';
   styleUrl: './app.css'
 })
 export class App {
-  message = signal('Click the button to load backend message');
+  loading = signal(false);
+  products = signal<Product[]>([]);
 
   constructor(private backendService: BackendService) {}
 
   ngOnInit() {}
 
-  loadMessage() {
-    this.backendService.getHello().subscribe({
-      next: (data) => this.message.set(data.message),
-      error: (err) => this.message.set('Error: ' + err.message)
+  async getProducts() {
+    this.loading.set(true);
+    this.backendService.getProducts().subscribe({
+      next: (data) => {
+        this.products.set(data.products);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.products.set([]);
+        this.loading.set(false);
+      }
     });
   }
 }

@@ -10,7 +10,7 @@ export class BackendService {
 
   constructor(private http: HttpClient) {}
 
-  getHello(): Observable<{ message: string }> {
-    return this.http.get<{ message: string }>(`${this.apiUrl}/hello`);
+  getProducts(): Observable<{products: []}> {
+    return this.http.get<{ products: [] }>(`${this.apiUrl}/products`);
   }
 }
