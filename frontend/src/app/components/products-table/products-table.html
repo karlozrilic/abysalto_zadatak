@@ -1,0 +1,20 @@
+<p-button
+    label="Load products"
+    (click)="getProducts()"
+/>
+{{ loading() }}
+
+@if(products().length > 0) {
+    @for (item of products(); track item.id) {
+        <div class="flex">
+        <div>{{ item.id }}</div>
+        <div>{{ item.name }}</div>
+        <div>{{ item.price }}€</div>
+        <div>{{ item.quantity }}</div>
+        </div>
+    } @empty {
+        <li>There are no items.</li>
+    }
+} @else {
+    <p>No products</p>
+}
