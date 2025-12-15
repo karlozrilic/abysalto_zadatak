@@ -1,20 +1,86 @@
-<p-button
-    label="Load products"
-    (click)="getProducts()"
-/>
-{{ loading() }}
-
-@if(products().length > 0) {
-    @for (item of products(); track item.id) {
-        <div class="flex">
-        <div>{{ item.id }}</div>
-        <div>{{ item.name }}</div>
-        <div>{{ item.price }}€</div>
-        <div>{{ item.quantity }}</div>
+<p-table
+    [value]="products()"
+    [globalFilterFields]="['name', 'price', 'reviews', 'quantity']"
+    [paginator]="true"
+    [rows]="10"
+    dataKey="id"
+    sortMode="multiple"
+    [loading]="loading()"
+    [tableStyle]="{ 'min-width': '60rem' }"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-bold">Products</span>
+            <p-button icon="pi pi-refresh" rounded raised />
         </div>
-    } @empty {
-        <li>There are no items.</li>
-    }
-} @else {
-    <p>No products</p>
-}
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th pSortableColumn="name">
+                Name
+                <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th>Description</th>
+            <th>Image</th>
+            <th pSortableColumn="price">
+                Price
+                <p-sortIcon field="price"></p-sortIcon>
+            </th>
+            <th pSortableColumn="reviews">
+                Reviews
+                <p-sortIcon field="reviews"></p-sortIcon>
+            </th>
+            <th pSortableColumn="quantity">
+                Quantity
+                <p-sortIcon field="quantity"></p-sortIcon>
+            </th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-product>
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>
+                @if(product.images[0]) {
+                    <img
+                        [src]="product.images[0]"
+                        [alt]="product.name"
+                        class="w-24 rounded"
+                    />
+                } @else {
+                    <img
+                        src="https://placehold.co/600x400/png?text=No+Image"
+                        [alt]="product.name"
+                        class="w-24 rounded"
+                    />
+                }
+            </td>
+            <td>{{ product.price | currency: 'USD' }}</td>
+            <td><p-rating [(ngModel)]="product.rating" [readonly]="true" /></td>
+            <td>
+                <p-tag [value]="product.quantity" [severity]="getSeverity(product.quantity)" />
+            </td>
+            <td>
+                <div class="flex gap-4">
+                    <p-button
+                        (click)="addToCart(product.id)"
+                    >
+                        <span class="pi pi-cart-plus"></span>
+                    </p-button>
+                    <p-button
+                        (click)="removeFromCart(product.id)"
+                        severity="danger"
+                    >
+                        <span class="pi pi-cart-minus"></span>
+                    </p-button>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template #footer>
+        <tr>
+            <td colspan="7">In total there are {{ products() ? products().length : 0 }} products.</td>
+        </tr>
+    </ng-template>
+</p-table>

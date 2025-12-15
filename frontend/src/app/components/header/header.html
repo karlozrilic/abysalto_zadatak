@@ -1,0 +1,41 @@
+<div class="flex justify-center absolute top-0 left-0 right-0">
+    <p-menubar [model]="items" class="flex max-w-5xl w-full">
+        <ng-template #item let-item let-root="root">
+            <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2" [routerLink]="item.routerLink">
+                @if (item.icon) {
+                    <span [class]="'p-menubar-item-icon ' + item.icon"></span>
+                }
+                <span>{{ item.label }}</span>
+                @if (item.badge) {
+                    <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="item.badge" />
+                }
+                @if (item.shortcut) {
+                    <span class="ms-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{ item.shortcut }}</span>
+                }
+                @if (item.items) {
+                    <i [ngClass]="['ms-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i> 
+                }
+            </a>
+        </ng-template>
+        <ng-template #end let-root="root">
+            <div #cartHeaderWrapper class="flex items-center gap-2">
+                <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2" (click)="cartMenu.toggle($event)">
+                    <span class="pi pi-shopping-cart"></span>
+                    <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="3" />
+                </a>
+                <p-popover #cartMenu [appendTo]="cartHeaderWrapper">
+                    <a pRipple class="flex items-center px-4 py-3 cursor-pointer">
+                        <span [class]=""></span>
+                        <span class="ms-2">{{ 'txt' }}</span>
+                    </a>
+                    
+                    <div>
+                        <a pRipple class="flex items-center px-4 py-3 cursor-pointer" routerLink="/cart">
+                            View cart
+                        </a>
+                    </div>
+                </p-popover>
+            </div>
+        </ng-template>
+    </p-menubar>
+</div>
