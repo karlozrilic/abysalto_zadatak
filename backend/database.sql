@@ -93,3 +93,22 @@ CREATE TABLE cart_items (
     added_at TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE (cart_id, product_id)
 );
+
+CREATE INDEX idx_carts_user_active
+ON carts (user_id)
+WHERE status = 'active';
+
+CREATE INDEX idx_carts_guest_active
+ON carts (guest_id)
+WHERE status = 'active';
+
+CREATE UNIQUE INDEX uniq_active_cart_user
+ON carts (user_id)
+WHERE status = 'active';
+
+CREATE UNIQUE INDEX uniq_active_cart_guest
+ON carts (guest_id)
+WHERE status = 'active';
+
+CREATE INDEX idx_cart_items_cart_id
+ON cart_items (cart_id);

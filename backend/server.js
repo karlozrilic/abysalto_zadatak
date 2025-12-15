@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const db = require('./db');
+const { getCartOrCreate, addToCart, removeFromCart } = require('./functions/cart');
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,8 +19,12 @@ function authenticate(req, res, next) {
     
     // For the purpose of this app if there is no authorization header user is guest
     if (!authHeader) {
+        const guestId = req.headers['x-guest-id'];
+        if (!guestId) {
+            return res.status(401).json({ error: 'Missing guest id' });
+        }
         req.identity = { type: 'guest', id: req.headers['x-guest-id'] };
-        next();
+        return next();
     }
     
     const token = authHeader.split(' ')[1];
@@ -28,9 +33,9 @@ function authenticate(req, res, next) {
     if (token === 'secret-token') {
         // Authentication successful
         req.identity = { type: 'user', id: 123, username: 'john' };
-        next();
+        return next();
     } else {
-        res.status(403).send('Invalid token');
+        return res.status(403).send('Invalid token');
     }
 }
 
@@ -47,53 +52,66 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.get('/api/cart', authenticate, async (req, res) => {
-    const { type, id } = req.identity;
+    try {
+        const cartResult = await getCartOrCreate(req.identity);
 
-    if (type === 'user') {
-      // logged in
-    } else {
-      // guest logic
+        const cartId = cartResult.id;
+
+        const cartItems = await db.query(`
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.images,
+                p.price,
+                ci.quantity,
+                (p.price * ci.quantity) AS total_price
+            FROM cart_items ci
+            JOIN products p ON p.id = ci.product_id
+            WHERE ci.cart_id = $1;`,
+            [cartId]
+        );
+
+        res.json({ products: cartItems.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
     }
-    const query = await db.query(`
-        SELECT * FROM carts
-        ORDER BY id ASC
-    `);
-    res.json({ products: query.rows });
 });
 
 app.post('/api/cart/add', authenticate, async (req, res) => {
     try {
-        const userId = req.identity.id;
         const { productId } = req.body;
 
         if (!productId) {
-        return res.status(400).json({
-            error: 'productId is required'
-        });
+            return res.status(400).json({
+                error: 'productId is required'
+            });
         }
 
-        // TODO pass identity
-        await addToCart(userId, productId);
+        const cartResult = await getCartOrCreate(req.identity);
+
+        await addToCart(cartResult.id, productId, 1);
 
         res.json({ message: 'Product added to cart' });
     } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: err.message });
     }
 });
 
 app.post('/api/cart/remove', authenticate, async (req, res) => {
     try {
-        const userId = req.identity.id;
         const { productId } = req.body;
 
         if (!productId) {
-        return res.status(400).json({
-            error: 'productId is required'
-        });
+            return res.status(400).json({
+                error: 'productId is required'
+            });
         }
 
-        // TODO pass identity
-        await removeFromCart(userId, productId);
+        const cartResult = await getCartOrCreate(req.identity);
+
+        await removeFromCart(cartResult.id, productId);
 
         res.json({ message: 'Product removed from cart' });
     } catch (err) {
