@@ -3,7 +3,6 @@ import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
-import { Rating } from 'primeng/rating';
 import { BackendService } from '../../services/backend.service';
 import { CurrencyPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
