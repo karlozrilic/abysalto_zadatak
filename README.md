@@ -47,4 +47,6 @@ docker exec -it db psql -U myuser -d mydb -f /init.sql
 |```POST```|```/api/cart/add```|Add product in cart or increment ```quantity``` if it already exists in cart|<pre><code>{ "productId": 123 }</code></pre>|
 |```POST```|```/api/cart/remove```|Decrement ```quantity``` by 1 if ```quantity > 1``` or remove product in cart if ```quantity``` would become 0|<pre><code>{ "productId": 123 }</code></pre>|
 
+## System design document
+
 [System design link](https://docs.google.com/document/d/1KMym27QR-A3uz-7sJAvoiWA9NjnlntxmTffK-ctmveQ/edit?usp=sharing)
