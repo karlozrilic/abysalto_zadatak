@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { Button } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { BackendService } from '../../services/backend.service';
 import { CurrencyPipe } from '@angular/common';
@@ -22,6 +22,7 @@ import { Product } from '../../models/product.model';
 	providers: [MessageService]
 })
 export class Cart {
+	@ViewChild('cartTable') table!: Table;
     loading = signal(false);
     cartProducts = signal<Product[]>([]);
 
@@ -53,6 +54,7 @@ export class Cart {
 	async removeFromCart(productId: number) {
 		this.backendService.removeFromCart(productId).subscribe({
 			next: (data) => {
+				this.getCart();
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product removed from cart', life: 3000 });
 			},
@@ -81,5 +83,11 @@ export class Cart {
 				this.loading.set(false);
 			}
 		});
+	}
+
+	refreshTable() {
+		if (this.table) {
+			this.getCart();
+		}
 	}
 }

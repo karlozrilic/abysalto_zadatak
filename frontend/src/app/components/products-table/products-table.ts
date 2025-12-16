@@ -1,11 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { Button } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { FormsModule } from '@angular/forms';
 import { BackendService } from '../../services/backend.service';
 import { CurrencyPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
+import { TableLazyLoadEvent } from 'primeng/table';
 import { Toast } from 'primeng/toast';
 import { Product } from '../../models/product.model';
 
@@ -24,8 +25,13 @@ import { Product } from '../../models/product.model';
 	providers: [MessageService]
 })
 export class ProductsTable {
+	@ViewChild('productTable') table!: Table;
 	loading = signal(false);
 	products = signal<Product[]>([]);
+	totalRecords = signal(0);
+	rows = signal(10);
+	sortField?: string;
+	sortOrder?: number;
 
 	constructor(
 		private backendService: BackendService,
@@ -33,7 +39,7 @@ export class ProductsTable {
 	) {}
 
 	ngOnInit() {
-		this.getProducts();
+		this.loadProducts({ first: 0, rows: this.rows() });;
 	}
 
 	getSeverity(quantity: number) {
@@ -78,20 +84,38 @@ export class ProductsTable {
 		});
 	}
 
-	async getProducts() {
+	loadProducts(event: TableLazyLoadEvent) {
 		this.loading.set(true);
-		this.backendService.getProducts().subscribe({
-			next: (data) => {
-				this.products.set(data.products);
-				this.loading.set(false);
-			},
-			error: (err) => {
-				this.products.set([]);
-				this.loading.set(false);
-			},
-			complete: () => {
-				this.loading.set(false);
-			}
+
+		const page = (event.first! / event.rows!) + 1;
+		const pageSize = event.rows!;
+		if (typeof event.sortField === 'string') {
+			this.sortField = event.sortField;
+		}
+		
+		if (typeof event.sortOrder === 'number') {
+			this.sortOrder = event.sortOrder;
+		}
+
+		const sortField = event.sortField ?? this.sortField;
+  		const sortOrder = event.sortOrder ?? this.sortOrder;
+		const filters = event.filters;
+
+		this.backendService.getProducts(page, pageSize, this.sortField, this.sortOrder).subscribe(res => {
+			this.products.set(res.products);
+			this.totalRecords.set(res.total);
+			this.loading.set(false);
 		});
+	}
+
+	refreshTable() {
+		if (this.table) {
+			this.loadProducts({
+				first: this.table.first ?? undefined,
+				rows: this.table.rows,
+				sortField: this.sortField,
+				sortOrder: this.sortOrder
+			});
+		}
 	}
 }

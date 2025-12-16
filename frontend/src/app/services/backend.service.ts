@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../models/product.model';
 
@@ -16,8 +16,36 @@ export class BackendService {
 
 	constructor(private http: HttpClient) {}
 
-	getProducts(): Observable<{products: Product[]}> {
-		return this.http.get<{ products: Product[] }>(`${this.apiUrl}/products`);
+	getProducts(page: number, pageSize: number, sortField?: string | string[] | undefined, sortOrder?: number | null | undefined): Observable<{
+		products: Product[],
+		total: number,
+        page: number,
+        pageSize: number
+	}> {
+		let params = new HttpParams()
+			.set('page', page.toString())
+			.set('pageSize', pageSize.toString());
+
+		if (sortField) {
+			if (Array.isArray(sortField)) {
+				sortField.forEach((field) => {
+					params = params.set('sortField', field);
+				})
+			} else {
+				params = params.set('sortField', sortField);
+			}
+		}
+
+		if (sortOrder != null) {
+			params = params.set('sortOrder', sortOrder.toString());
+		}
+
+		return this.http.get<{
+			products: Product[],
+			total: number,
+			page: number,
+			pageSize: number
+		}>(`${this.apiUrl}/products`, { params });
 	}
 
 	getCart(): Observable<{products: Product[]}>{

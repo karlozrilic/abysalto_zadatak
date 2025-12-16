@@ -1,18 +1,23 @@
 <p-toast />
 <p-table
+    #productTable
     [value]="products()"
     [globalFilterFields]="['name', 'price', 'quantity']"
     [paginator]="true"
-    [rows]="10"
+    [rows]="rows()"
+    [totalRecords]="totalRecords()"
     dataKey="id"
-    sortMode="multiple"
+    sortMode="single"
     [loading]="loading()"
+    [lazy]="true"
+    (onLazyLoad)="loadProducts($event)"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
     [tableStyle]="{ 'min-width': '60rem' }"
 >
     <ng-template #caption>
         <div class="flex items-center justify-between">
             <span class="text-xl font-bold">Products</span>
-            <p-button icon="pi pi-refresh" rounded raised />
+            <p-button icon="pi pi-refresh" rounded raised (onClick)="refreshTable()" />
         </div>
     </ng-template>
     <ng-template #header>

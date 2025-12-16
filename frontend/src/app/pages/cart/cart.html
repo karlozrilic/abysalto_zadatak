@@ -1,5 +1,6 @@
 <p-toast />
 <p-table
+    #cartTable
     [value]="cartProducts()"
     [globalFilterFields]="['name', 'price', 'quantity']"
     [paginator]="true"
@@ -12,7 +13,7 @@
     <ng-template #caption>
         <div class="flex items-center justify-between">
             <span class="text-xl font-bold">Products</span>
-            <p-button icon="pi pi-refresh" rounded raised />
+            <p-button icon="pi pi-refresh" rounded raised (onClick)="refreshTable()" />
         </div>
     </ng-template>
     <ng-template #header>
