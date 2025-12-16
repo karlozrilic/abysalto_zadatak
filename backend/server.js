@@ -51,6 +51,18 @@ app.get('/api/products', async (req, res) => {
     res.json({ products: query.rows });
 });
 
+app.get('/api/products/:id', async (req, res) => {
+    const productId = req.query.id;
+    const query = await db.query(`
+        SELECT * FROM products
+        WHERE id = $1
+        LIMIT 1;
+        `,
+        [productId]
+    );
+    res.json({ products: query.rows });
+});
+
 app.get('/api/cart', authenticate, async (req, res) => {
     try {
         const cartResult = await getCartOrCreate(req.identity);
