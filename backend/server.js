@@ -9,11 +9,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use((req, res, next) => {
-    console.log('Middleware 1: This always runs');
-    next();
-});
-
 function authenticate(req, res, next) {
     const authHeader = req.headers.authorization;
     
@@ -46,12 +41,14 @@ app.get('/', (req, res) => {
 app.get('/api/products', async (req, res) => {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const pageSize = Math.min(parseInt(req.query.pageSize) || 10, 100);
+    const { sortField } = req.query;
+    const sortOrder = req.query.sortOrder ? parseInt(req.query.sortOrder) : 0;
     const offset = (page - 1) * pageSize;
 
     try {
         const query = await db.query(`
             SELECT * FROM products
-            ORDER BY id ASC
+            ORDER BY ${sortField ?? 'id'} ${sortOrder === 1 ? 'ASC' : 'DESC'}
             LIMIT $1 OFFSET $2`,
             [pageSize, offset]
         );
