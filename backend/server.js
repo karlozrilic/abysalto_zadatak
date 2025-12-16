@@ -26,7 +26,6 @@ function authenticate(req, res, next) {
     
     // Verify the token (simplified)
     if (token === 'secret-token') {
-        // Authentication successful
         req.identity = { type: 'user', id: 123, username: 'john' };
         return next();
     } else {

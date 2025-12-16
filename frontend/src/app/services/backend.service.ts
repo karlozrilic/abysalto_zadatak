@@ -48,7 +48,7 @@ export class BackendService {
 		}>(`${this.apiUrl}/products`, { params });
 	}
 
-	/// For now user will always be guest with hardcoded uuid
+	/// For the purpose of this app user will always be guest with hardcoded uuid
 	getCart(): Observable<{products: Product[]}>{
 		return this.http.get<{ products: Product[] }>(`${this.apiUrl}/cart`, 
 			{
