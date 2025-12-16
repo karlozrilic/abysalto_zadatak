@@ -30,15 +30,6 @@ services:
     container_name: frontend_app
     ports:
       - "8080:80"
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend/src
-          target: /src/web
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./frontend/package.json
     depends_on:
       - backend
 

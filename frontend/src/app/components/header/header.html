@@ -21,7 +21,7 @@
             <div #cartHeaderWrapper class="flex items-center gap-2">
                 <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2" (click)="cartMenu.toggle($event)">
                     <span class="pi pi-shopping-cart"></span>
-                    <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="3" />
+                    <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="0" />
                 </a>
                 <p-popover #cartMenu [appendTo]="cartHeaderWrapper">
                     <a pRipple class="flex items-center px-4 py-3 cursor-pointer">

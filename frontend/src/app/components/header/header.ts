@@ -31,33 +31,5 @@ export class Header {
 				routerLink: '/'
 			}
 		];
-
-		var cart = [
-			{
-                label: 'Cart',
-                icon: 'pi pi-shopping-cart',
-                badge: '3',
-                items: [
-                    {
-                        label: 'Core',
-                        icon: 'pi pi-bolt',
-                        shortcut: '⌘+S',
-                    },
-                    {
-                        label: 'Blocks',
-                        icon: 'pi pi-server',
-                        shortcut: '⌘+B',
-                    },
-                    {
-                        separator: true,
-                    },
-                    {
-                        label: 'UI Kit',
-                        icon: 'pi pi-pencil',
-                        shortcut: '⌘+U',
-                    },
-                ],
-            },
-		]
 	}
 }

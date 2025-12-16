@@ -6,15 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { Rating } from 'primeng/rating';
 import { BackendService } from '../../services/backend.service';
 import { CurrencyPipe } from '@angular/common';
-
-interface Product {
-	id: number;
-	name: string;
-	description: string;
-	price: number;
-	quantity: number;
-	images: string[]
-}
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
+import { Product } from '../../models/product.model';
 
 @Component({
 	selector: 'app-products-table',
@@ -23,17 +17,21 @@ interface Product {
 		TableModule,
 		Tag,
 		FormsModule,
-		Rating,
-		CurrencyPipe
+		CurrencyPipe,
+		Toast
 	],
 	templateUrl: './products-table.html',
 	styleUrl: './products-table.css',
+	providers: [MessageService]
 })
 export class ProductsTable {
 	loading = signal(false);
 	products = signal<Product[]>([]);
 
-	constructor(private backendService: BackendService) {}
+	constructor(
+		private backendService: BackendService,
+		private messageService: MessageService
+	) {}
 
 	ngOnInit() {
 		this.getProducts();
@@ -53,9 +51,11 @@ export class ProductsTable {
 		this.backendService.addToCart(productId).subscribe({
 			next: (data) => {
 				this.loading.set(false);
+				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart', life: 3000 });
 			},
 			error: (err) => {
 				this.loading.set(false);
+				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
 			complete: () => {
 				this.loading.set(false);
@@ -67,9 +67,11 @@ export class ProductsTable {
 		this.backendService.removeFromCart(productId).subscribe({
 			next: (data) => {
 				this.loading.set(false);
+				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product removed from cart', life: 3000 });
 			},
 			error: (err) => {
 				this.loading.set(false);
+				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
 			complete: () => {
 				this.loading.set(false);

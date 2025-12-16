@@ -1,6 +1,7 @@
+<p-toast />
 <p-table
     [value]="products()"
-    [globalFilterFields]="['name', 'price', 'reviews', 'quantity']"
+    [globalFilterFields]="['name', 'price', 'quantity']"
     [paginator]="true"
     [rows]="10"
     dataKey="id"
@@ -25,10 +26,6 @@
             <th pSortableColumn="price">
                 Price
                 <p-sortIcon field="price"></p-sortIcon>
-            </th>
-            <th pSortableColumn="reviews">
-                Reviews
-                <p-sortIcon field="reviews"></p-sortIcon>
             </th>
             <th pSortableColumn="quantity">
                 Quantity
@@ -57,7 +54,6 @@
                 }
             </td>
             <td>{{ product.price | currency: 'USD' }}</td>
-            <td><p-rating [(ngModel)]="product.rating" [readonly]="true" /></td>
             <td>
                 <p-tag [value]="product.quantity" [severity]="getSeverity(product.quantity)" />
             </td>
