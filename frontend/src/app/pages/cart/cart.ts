@@ -25,6 +25,7 @@ export class Cart {
 	@ViewChild('cartTable') table!: Table;
     loading = signal(false);
     cartProducts = signal<Product[]>([]);
+	total = signal(0);
 
     constructor(
 		private backendService: BackendService,
@@ -37,11 +38,11 @@ export class Cart {
 
     async addToCart(productId: number) {
 		this.backendService.addToCart(productId).subscribe({
-			next: (data) => {
+			next: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart', life: 3000 });
 			},
-			error: (err) => {
+			error: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
@@ -53,12 +54,12 @@ export class Cart {
 
 	async removeFromCart(productId: number) {
 		this.backendService.removeFromCart(productId).subscribe({
-			next: (data) => {
+			next: () => {
 				this.getCart();
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product removed from cart', life: 3000 });
 			},
-			error: (err) => {
+			error: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
@@ -71,12 +72,14 @@ export class Cart {
     async getCart() {
 		this.loading.set(true);
 		this.backendService.getCart().subscribe({
-			next: (data) => {
-				this.cartProducts.set(data.products);
+			next: ({ products, total }) => {
+				this.cartProducts.set(products);
+				this.total.set(total);
 				this.loading.set(false);
 			},
-			error: (err) => {
+			error: () => {
 				this.cartProducts.set([]);
+				this.total.set(0);
 				this.loading.set(false);
 			},
 			complete: () => {

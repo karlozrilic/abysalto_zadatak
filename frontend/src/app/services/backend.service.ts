@@ -49,8 +49,8 @@ export class BackendService {
 	}
 
 	/// For the purpose of this app user will always be guest with hardcoded uuid
-	getCart(): Observable<{products: Product[]}>{
-		return this.http.get<{ products: Product[] }>(`${this.apiUrl}/cart`, 
+	getCart(): Observable<{products: Product[], total: number }>{
+		return this.http.get<{ products: Product[], total: number }>(`${this.apiUrl}/cart`, 
 			{
 				headers: {
 					'X-Guest-ID': '550e8400-e29b-41d4-a716-446655440000'

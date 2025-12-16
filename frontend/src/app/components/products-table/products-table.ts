@@ -54,11 +54,11 @@ export class ProductsTable {
 
 	async addToCart(productId: number) {
 		this.backendService.addToCart(productId).subscribe({
-			next: (data) => {
+			next: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart', life: 3000 });
 			},
-			error: (err) => {
+			error: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
@@ -70,11 +70,11 @@ export class ProductsTable {
 
 	async removeFromCart(productId: number) {
 		this.backendService.removeFromCart(productId).subscribe({
-			next: (data) => {
+			next: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product removed from cart', life: 3000 });
 			},
-			error: (err) => {
+			error: () => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			},
@@ -96,10 +96,6 @@ export class ProductsTable {
 		if (typeof event.sortOrder === 'number') {
 			this.sortOrder = event.sortOrder;
 		}
-
-		const sortField = event.sortField ?? this.sortField;
-  		const sortOrder = event.sortOrder ?? this.sortOrder;
-		const filters = event.filters;
 
 		this.backendService.getProducts(page, pageSize, this.sortField, this.sortOrder).subscribe(res => {
 			this.products.set(res.products);
