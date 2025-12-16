@@ -44,11 +44,33 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/products', async (req, res) => {
-    const query = await db.query(`
-        SELECT * FROM products
-        ORDER BY id ASC
-    `);
-    res.json({ products: query.rows });
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const pageSize = Math.min(parseInt(req.query.pageSize) || 10, 100);
+    const offset = (page - 1) * pageSize;
+
+    try {
+        const query = await db.query(`
+            SELECT * FROM products
+            ORDER BY id ASC
+            LIMIT $1 OFFSET $2`,
+            [pageSize, offset]
+        );
+
+        const countResult = await db.query(`
+            SELECT COUNT(*)::int AS total
+            FROM products;`
+        );
+
+        res.json({
+            products: query.rows,
+            total: countResult.rows[0].total,
+            page,
+            pageSize
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 app.get('/api/products/:id', async (req, res) => {
@@ -106,8 +128,8 @@ app.post('/api/cart/add', authenticate, async (req, res) => {
         await addToCart(cartResult.id, productId, 1);
 
         res.json({ message: 'Product added to cart' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -126,7 +148,7 @@ app.post('/api/cart/remove', authenticate, async (req, res) => {
         await removeFromCart(cartResult.id, productId);
 
         res.json({ message: 'Product removed from cart' });
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
 });
