@@ -73,7 +73,7 @@ async function getCartById(cartId) {
                 p.price,
                 p.images,
                 ci.quantity,
-                (p.price * ci.quantity) AS line_total
+                (p.price * ci.quantity) AS total
             FROM cart_items ci
             JOIN products p ON p.id = ci.product_id
             WHERE ci.cart_id = $1
