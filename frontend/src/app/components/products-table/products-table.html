@@ -44,19 +44,11 @@
             <td>{{ product.name }}</td>
             <td>{{ product.description }}</td>
             <td>
-                @if(product.images[0]) {
-                    <img
-                        [src]="product.images[0]"
-                        [alt]="product.name"
-                        class="w-24 rounded"
-                    />
-                } @else {
-                    <img
-                        src="https://placehold.co/600x400/png?text=No+Image"
-                        [alt]="product.name"
-                        class="w-24 rounded"
-                    />
-                }
+                <img
+                    [src]="product.images[0] ?? 'https://placehold.co/600x400/png?text=No+Image'"
+                    [alt]="product.name"
+                    class="w-24 rounded"
+                />
             </td>
             <td>{{ product.price | currency: 'EUR' }}</td>
             <td>

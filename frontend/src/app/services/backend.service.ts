@@ -2,11 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../models/product.model';
-
-interface BasicResponse {
-	status: number,
-	message: string
-}
+import { Cart } from '../models/cart.model';
 
 @Injectable({
   	providedIn: 'root'
@@ -49,8 +45,8 @@ export class BackendService {
 	}
 
 	/// For the purpose of this app user will always be guest with hardcoded uuid
-	getCart(): Observable<{products: Product[], total: number }>{
-		return this.http.get<{ products: Product[], total: number }>(`${this.apiUrl}/cart`, 
+	getCart(): Observable<Cart>{
+		return this.http.get<Cart>(`${this.apiUrl}/cart`, 
 			{
 				headers: {
 					'X-Guest-ID': '550e8400-e29b-41d4-a716-446655440000'
@@ -59,8 +55,8 @@ export class BackendService {
 		);
 	}
 
-	addToCart(productId: number): Observable<BasicResponse> {
-		return this.http.post<BasicResponse>(`${this.apiUrl}/cart/add`, 
+	addToCart(productId: number): Observable<Cart> {
+		return this.http.post<Cart>(`${this.apiUrl}/cart/add`, 
 			{
 				productId
 			},
@@ -72,8 +68,8 @@ export class BackendService {
 		);
 	}
 
-  	removeFromCart(productId: number): Observable<BasicResponse> {
-		return this.http.post<BasicResponse>(`${this.apiUrl}/cart/remove`,
+  	removeFromCart(productId: number): Observable<Cart> {
+		return this.http.post<Cart>(`${this.apiUrl}/cart/remove`,
 			{
 				productId
 			},

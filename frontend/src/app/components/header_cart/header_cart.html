@@ -1,0 +1,44 @@
+@if (cartStore.items().length == 0) {
+    <div class="flex items-center px-4 py-3">
+        Cart is empty
+    </div>
+} @else {
+    <p-dataview [value]="cartStore.items()" [rows]="5" [paginator]="cartStore.items().length > 5">
+        <ng-template #list let-items>
+            <div class="grid grid-cols-12 grid-nogutter">
+                <div class="col-span-12" *ngFor="let item of items; let first = first">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center p-2 gap-4"
+                        [ngClass]="{ 'border-t border-surface-200 dark:border-surface-700': !first }"
+                    >
+                        <div class="relative">
+                            <img
+                                class="block xl:block rounded-border h-16 w-16 object-cover"
+                                [src]="item.images[0] ?? 'https://placehold.co/600x400/png?text=No+Image'"
+                                [alt]="item.name"
+                            />
+
+                        </div>
+                        <div class="flex flex-col md:flex-row justify-between md:items-center flex-1 gap-6">
+                            <div class="flex flex-row md:flex-col justify-between items-start gap-2">
+                                <div>
+                                    <span class="font-medium text-secondary text-sm">{{ item.category }}</span>
+                                    <div class="text-lg font-medium text-surface-900 dark:text-surface-0 mt-2">{{ item.name }}</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:items-end gap-8">
+                                <span class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{
+                                    '$' + item.price
+                                }}</span>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataview>
+    <a pRipple class="flex items-center px-4 py-3 cursor-pointer" routerLink="/cart">
+        View cart
+    </a>
+}

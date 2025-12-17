@@ -18,21 +18,26 @@
             </a>
         </ng-template>
         <ng-template #end let-root="root">
-            <div #cartHeaderWrapper class="flex items-center gap-2">
-                <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2" (click)="cartMenu.toggle($event)">
-                    <span class="pi pi-shopping-cart"></span>
-                    <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="0" />
-                </a>
-                <p-popover #cartMenu [appendTo]="cartHeaderWrapper">
-                    <a pRipple class="flex items-center px-4 py-3 cursor-pointer">
-                        Header cart
+            <div class="flex items-center gap-2">
+                <span
+                    #cartMenuButton
+                    class="inline-block relative"
+                    (click)="toggleCart($event)"
+                >
+                    <a pRipple class="flex items-center px-4 py-3 cursor-pointer gap-2">
+                        <span class="pi pi-shopping-cart"></span>
+                        @if (cartStore.items().length > 0) {
+                            <p-badge [ngClass]="{ 'ms-auto': !root }" [value]="cartStore.items().length" />
+                        }
                     </a>
-                    
-                    <div>
-                        <a pRipple class="flex items-center px-4 py-3 cursor-pointer" routerLink="/cart">
-                            View cart
-                        </a>
-                    </div>
+                </span>
+                <p-popover
+                    #cartMenu
+                    appendTo="body"
+                    my="right top"
+                    at="left top"
+                >
+                    <app-header-cart />
                 </p-popover>
             </div>
         </ng-template>

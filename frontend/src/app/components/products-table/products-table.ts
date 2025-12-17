@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { Toast } from 'primeng/toast';
 import { Product } from '../../models/product.model';
+import { CartStore } from '../../store/cart.store';
 
 @Component({
 	selector: 'app-products-table',
@@ -35,6 +36,7 @@ export class ProductsTable {
 
 	constructor(
 		private backendService: BackendService,
+		public cartStore: CartStore,
 		private messageService: MessageService
 	) {}
 
@@ -53,35 +55,31 @@ export class ProductsTable {
     }
 
 	async addToCart(productId: number) {
-		this.backendService.addToCart(productId).subscribe({
-			next: () => {
+		this.cartStore.addItem(
+			productId,
+			() => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product added to cart', life: 3000 });
 			},
-			error: () => {
+			() => {
 				this.loading.set(false);
-				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
-			},
-			complete: () => {
-				this.loading.set(false);
+				this.messageService.add({ severity: 'error', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			}
-		});
+		);
 	}
 
 	async removeFromCart(productId: number) {
-		this.backendService.removeFromCart(productId).subscribe({
-			next: () => {
+		this.cartStore.removeItem(
+			productId,
+			() => {
 				this.loading.set(false);
 				this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product removed from cart', life: 3000 });
 			},
-			error: () => {
+			() => {
 				this.loading.set(false);
-				this.messageService.add({ severity: 'danger', summary: 'Error', detail: 'There was a problem', life: 3000 });
-			},
-			complete: () => {
-				this.loading.set(false);
+				this.messageService.add({ severity: 'error', summary: 'Error', detail: 'There was a problem', life: 3000 });
 			}
-		});
+		);
 	}
 
 	loadProducts(event: TableLazyLoadEvent) {

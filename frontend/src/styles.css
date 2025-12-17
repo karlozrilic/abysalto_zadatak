@@ -2,3 +2,8 @@
 
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
+
+.p-popover::before,
+.p-popover::after {
+    display: none;
+}
