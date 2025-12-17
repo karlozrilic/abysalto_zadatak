@@ -133,7 +133,7 @@ app.post('/api/cart/add', authenticate, async (req, res) => {
 
         await addToCart(cartResult.id, productId, 1);
 
-        const updatedCart = await getCartById(req.identity);
+        const updatedCart = await getCartById(cartResult.id);
 
         res.json(updatedCart);
     } catch (error) {
@@ -155,7 +155,7 @@ app.post('/api/cart/remove', authenticate, async (req, res) => {
 
         await removeFromCart(cartResult.id, productId);
 
-        const updatedCart = await getCartById(req.identity);
+        const updatedCart = await getCartById(cartResult.id);
 
         res.json(updatedCart);
     } catch (error) {

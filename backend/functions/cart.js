@@ -61,27 +61,8 @@ async function getCartIdOrCreate(identity) {
     }
 }
 
-async function getCartById(identity) {
-    const { type, id } = identity;
-
+async function getCartById(cartId) {
     try {
-        const column = type === 'user' ? 'user_id' : 'guest_id';
-
-        const cartResult = await db.query(`
-            SELECT id
-            FROM carts
-            WHERE ${column} = $1 AND status = 'active'
-            LIMIT 1
-            `,
-            [id]
-        );
-
-        if (cartResult.rows.length === 0) {
-            return { items: [], total: 0 };
-        }
-
-        const cartId = cartResult.rows[0].id;
-
         const { rows } = await db.query(
             `
             SELECT
