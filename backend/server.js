@@ -87,32 +87,7 @@ app.get('/api/cart', authenticate, async (req, res) => {
 
         const cartId = cartResult.id;
 
-        const cartItems = await db.query(`
-            SELECT
-                p.id,
-                p.name,
-                p.description,
-                p.images,
-                p.price,
-                ci.quantity,
-                (p.price * ci.quantity) AS total
-            FROM cart_items ci
-            JOIN products p ON p.id = ci.product_id
-            WHERE ci.cart_id = $1;`,
-            [cartId]
-        );
-
-        const totalResult = await db.query(`
-            SELECT COALESCE(SUM(p.price * ci.quantity), 0) AS cart_total
-            FROM cart_items ci
-            JOIN products p ON p.id = ci.product_id
-            WHERE ci.cart_id = $1
-        `, [cartId]);
-
-        res.json({
-            products: cartItems.rows,
-            total: totalResult.rows[0].cart_total
-        });
+        res.json(await getCartById(cartId));
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });

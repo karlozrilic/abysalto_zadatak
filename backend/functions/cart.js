@@ -63,21 +63,18 @@ async function getCartIdOrCreate(identity) {
 
 async function getCartById(cartId) {
     try {
-        const { rows } = await db.query(
-            `
+        const { rows } = await db.query(`
             SELECT
-                ci.id AS cart_item_id,
-                p.id AS product_id,
+                p.id,
                 p.name,
                 p.description,
-                p.price,
                 p.images,
+                p.price,
                 ci.quantity,
                 (p.price * ci.quantity) AS total
             FROM cart_items ci
             JOIN products p ON p.id = ci.product_id
-            WHERE ci.cart_id = $1
-            `,
+            WHERE ci.cart_id = $1;`,
             [cartId]
         );
 
