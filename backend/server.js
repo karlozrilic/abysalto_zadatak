@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const db = require('./db');
-const { getCartOrCreate, addToCart, removeFromCart } = require('./functions/cart');
+const { getCartIdOrCreate, getCartById, addToCart, removeFromCart } = require('./functions/cart');
 
 const PORT = process.env.PORT || 3000;
 
@@ -83,7 +83,7 @@ app.get('/api/products/:id', async (req, res) => {
 
 app.get('/api/cart', authenticate, async (req, res) => {
     try {
-        const cartResult = await getCartOrCreate(req.identity);
+        const cartResult = await getCartIdOrCreate(req.identity);
 
         const cartId = cartResult.id;
 
@@ -95,7 +95,7 @@ app.get('/api/cart', authenticate, async (req, res) => {
                 p.images,
                 p.price,
                 ci.quantity,
-                (p.price * ci.quantity) AS total_price
+                (p.price * ci.quantity) AS total
             FROM cart_items ci
             JOIN products p ON p.id = ci.product_id
             WHERE ci.cart_id = $1;`,
@@ -113,8 +113,8 @@ app.get('/api/cart', authenticate, async (req, res) => {
             products: cartItems.rows,
             total: totalResult.rows[0].cart_total
         });
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -129,11 +129,13 @@ app.post('/api/cart/add', authenticate, async (req, res) => {
             });
         }
 
-        const cartResult = await getCartOrCreate(req.identity);
+        const cartResult = await getCartIdOrCreate(req.identity);
 
         await addToCart(cartResult.id, productId, 1);
 
-        res.json({ message: 'Product added to cart' });
+        const updatedCart = await getCartById(req.identity);
+
+        res.json(updatedCart);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -149,11 +151,13 @@ app.post('/api/cart/remove', authenticate, async (req, res) => {
             });
         }
 
-        const cartResult = await getCartOrCreate(req.identity);
+        const cartResult = await getCartIdOrCreate(req.identity);
 
         await removeFromCart(cartResult.id, productId);
 
-        res.json({ message: 'Product removed from cart' });
+        const updatedCart = await getCartById(req.identity);
+
+        res.json(updatedCart);
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }

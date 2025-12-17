@@ -27,7 +27,7 @@ async function removeFromCart(cartId, productId) {
     );
 }
 
-async function getCartOrCreate(identity) {
+async function getCartIdOrCreate(identity) {
     const { type, id } = identity;
 
     try {
@@ -55,14 +55,71 @@ async function getCartOrCreate(identity) {
         );
 
         return cartResult.rows[0];
-    } catch (err) {
-        console.error(err);
-        throw err;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function getCartById(identity) {
+    const { type, id } = identity;
+
+    try {
+        const column = type === 'user' ? 'user_id' : 'guest_id';
+
+        const cartResult = await db.query(`
+            SELECT id
+            FROM carts
+            WHERE ${column} = $1 AND status = 'active'
+            LIMIT 1
+            `,
+            [id]
+        );
+
+        if (cartResult.rows.length === 0) {
+            return { items: [], total: 0 };
+        }
+
+        const cartId = cartResult.rows[0].id;
+
+        const { rows } = await db.query(
+            `
+            SELECT
+                ci.id AS cart_item_id,
+                p.id AS product_id,
+                p.name,
+                p.description,
+                p.price,
+                p.images,
+                ci.quantity,
+                (p.price * ci.quantity) AS line_total
+            FROM cart_items ci
+            JOIN products p ON p.id = ci.product_id
+            WHERE ci.cart_id = $1
+            `,
+            [cartId]
+        );
+
+        const totalResult = await db.query(`
+            SELECT COALESCE(SUM(p.price * ci.quantity), 0) AS cart_total
+            FROM cart_items ci
+            JOIN products p ON p.id = ci.product_id
+            WHERE ci.cart_id = $1
+        `, [cartId]);
+
+        return {
+            items: rows,
+            total: totalResult.rows[0].cart_total
+        };
+    } catch (error) {
+        console.error(error);
+        throw error;
     }
 }
 
 module.exports = {
     addToCart,
     removeFromCart,
-    getCartOrCreate
+    getCartIdOrCreate,
+    getCartById
 };
