@@ -89,7 +89,7 @@ async function getCartById(cartId) {
         `, [cartId]);
 
         return {
-            items: rows,
+            products: rows,
             total: totalResult.rows[0].cart_total
         };
     } catch (error) {
